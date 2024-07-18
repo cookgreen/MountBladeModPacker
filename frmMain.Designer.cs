@@ -43,6 +43,8 @@
             this.groupOutput = new System.Windows.Forms.GroupBox();
             this.txtOutput = new System.Windows.Forms.RichTextBox();
             this.btnStartPack = new System.Windows.Forms.Button();
+            this.btnLoadPackProfile = new System.Windows.Forms.Button();
+            this.btnSaveProfile = new System.Windows.Forms.Button();
             this.groupOutput.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -187,11 +189,34 @@
             this.btnStartPack.UseVisualStyleBackColor = true;
             this.btnStartPack.Click += new System.EventHandler(this.btnStartPack_Click);
             // 
+            // btnLoadPackProfile
+            // 
+            this.btnLoadPackProfile.Location = new System.Drawing.Point(15, 638);
+            this.btnLoadPackProfile.Name = "btnLoadPackProfile";
+            this.btnLoadPackProfile.Size = new System.Drawing.Size(167, 60);
+            this.btnLoadPackProfile.TabIndex = 12;
+            this.btnLoadPackProfile.Text = "Load Profile";
+            this.btnLoadPackProfile.UseVisualStyleBackColor = true;
+            this.btnLoadPackProfile.Click += new System.EventHandler(this.btnLoadPackProfile_Click);
+            // 
+            // btnSaveProfile
+            // 
+            this.btnSaveProfile.Enabled = false;
+            this.btnSaveProfile.Location = new System.Drawing.Point(188, 638);
+            this.btnSaveProfile.Name = "btnSaveProfile";
+            this.btnSaveProfile.Size = new System.Drawing.Size(167, 60);
+            this.btnSaveProfile.TabIndex = 13;
+            this.btnSaveProfile.Text = "Save As";
+            this.btnSaveProfile.UseVisualStyleBackColor = true;
+            this.btnSaveProfile.Click += new System.EventHandler(this.btnSaveProfile_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(616, 710);
+            this.Controls.Add(this.btnSaveProfile);
+            this.Controls.Add(this.btnLoadPackProfile);
             this.Controls.Add(this.btnStartPack);
             this.Controls.Add(this.groupOutput);
             this.Controls.Add(this.btnBrowseModSavePath);
@@ -233,5 +258,7 @@
         private GroupBox groupOutput;
         private RichTextBox txtOutput;
         private Button btnStartPack;
+        private Button btnLoadPackProfile;
+        private Button btnSaveProfile;
     }
 }

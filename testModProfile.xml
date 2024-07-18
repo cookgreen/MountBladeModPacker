@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ModPackProfile name="TestMod" baseDir="YourFolderFullDir" saveDir="YourPackSaveDir">
+  <ExcludeList>
+    <ExcludeItem type="File">1.file</ExcludeItem>
+    <ExcludeItem type="Folder">folder1</ExcludeItem>
+    <ExcludeItem type="File">2.file</ExcludeItem>
+    <ExcludeItem type="Folder">folder2</ExcludeItem>
+    <ExcludeItem type="File">3.file</ExcludeItem>
+  </ExcludeList>
+</ModPackProfile>

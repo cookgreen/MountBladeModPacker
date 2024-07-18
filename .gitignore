@@ -3,3 +3,4 @@ bin/*
 obj/*
 *.exe
 *.dll
+!7z.exe
