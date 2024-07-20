@@ -13,37 +13,62 @@ namespace MountBladeModPacker
     public partial class frmFileFolder : Form
     {
         private FolderFile folderFile;
-        private string baseDir;
+        private List<string> folders;
+        private List<string> files;
+        private string currentDir;
 
         public FolderFile SelectedFolderFile { get { return folderFile; } }
 
-        public frmFileFolder(string baseDir)
+        public frmFileFolder(string currentDir)
         {
             InitializeComponent();
-            refreshFileFolders(baseDir);
+            folders = new List<string>();
+            files = new List<string>();
+            refreshFileFolders(currentDir);
         }
 
-        private void refreshFileFolders(string baseDir)
+        private void refreshFileFolders(string currentDir)
         {
-            DirectoryInfo di = new DirectoryInfo(baseDir);
+            this.currentDir = currentDir;
+            folders.Clear();
+            files.Clear();
+
+            DirectoryInfo di = new DirectoryInfo(currentDir);
             foreach(var fileFolderItem in di.GetFileSystemInfos())
             {
-                if(fileFolderItem.Attributes == FileAttributes.Directory)
+                if ((fileFolderItem.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+                    continue;
+
+                if ((fileFolderItem.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
                 {
-                    ListViewItem item = new ListViewItem();
-                    item.Text = fileFolderItem.Name;
-                    item.SubItems.Add("Folder");
-                    item.ImageIndex = 0;
-                    listDirectory.Items.Add(item);
+                    folders.Add(fileFolderItem.Name);
                 }
                 else
                 {
-                    ListViewItem item = new ListViewItem();
-                    item.Text = fileFolderItem.Name;
-                    item.SubItems.Add("File");
-                    item.ImageIndex = 1;
-                    listDirectory.Items.Add(item);
+                    files.Add(fileFolderItem.Name);
                 }
+
+            }
+
+            folders.Sort();
+            files.Sort();
+            
+            foreach(var folder in folders)
+            {
+                ListViewItem item = new ListViewItem();
+                item.Text = folder;
+                item.SubItems.Add("Folder");
+                item.ImageIndex = 0;
+                listDirectory.Items.Add(item);
+            }
+
+            foreach (var file in files)
+            {
+                ListViewItem item = new ListViewItem();
+                item.Text = file;
+                item.SubItems.Add("File");
+                item.ImageIndex = 1;
+                listDirectory.Items.Add(item);
             }
         }
 

@@ -93,14 +93,35 @@ namespace MountBladeModulePacker
                 if(fileFolderWin.ShowDialog() == DialogResult.OK)
                 {
                     var fileFolder = fileFolderWin.SelectedFolderFile;
-                    excludedFileFolders.Add(fileFolder);
-                    
-                    ListViewItem item = new ListViewItem();
-                    item.Text = fileFolder.Name;
-                    item.SubItems.Add(fileFolder.Type.ToString());
-                    listModExcludeList.Items.Add(item);
+                    if(!isContainInExculdeList(fileFolder))
+                    {
+                        excludedFileFolders.Add(fileFolder);
+
+                        ListViewItem item = new ListViewItem();
+                        item.Text = fileFolder.Name;
+                        item.SubItems.Add(fileFolder.Type.ToString());
+                        listModExcludeList.Items.Add(item);
+                    }
+                    else
+                    {
+                        MessageBox.Show("The exculded folder/file has already existed in the list!", "Error",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        btnAddModExcludeItem_Click(sender, e);
+                    }
                 }
             }
+        }
+
+        private bool isContainInExculdeList(FolderFile fileFolder)
+        {
+            foreach(var item in excludedFileFolders)
+            {
+                if(item.Name == fileFolder.Name && item.Type == fileFolder.Type)
+                { 
+                    return true; 
+                }
+            }
+            return false;
         }
 
         private void btnRemoveModExcludeItem_Click(object sender, EventArgs e)
