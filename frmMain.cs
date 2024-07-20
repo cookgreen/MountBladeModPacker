@@ -125,52 +125,58 @@ namespace MountBladeModulePacker
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            string path = txtModBaseDir.Text;
-            string fullName = new DirectoryInfo(txtModSavePath.Text).Parent.FullName;
+            string baseDir = txtModBaseDir.Text;
 
-            DirectoryInfo directoryInfo = new DirectoryInfo(path);
-            string name = directoryInfo.Name;
-            DirectoryInfo directoryInfo2 = directoryInfo.Parent;
-            string text = Path.Combine(fullName, name);
-            Directory.CreateDirectory(text);
-            foreach (FileSystemInfo item in directoryInfo.EnumerateFileSystemInfos())
+            DirectoryInfo saveFileFullPathInfo = new DirectoryInfo(txtModSavePath.Text);
+            if (saveFileFullPathInfo != null)
             {
-                if ((item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
+                string saveFileDir = saveFileFullPathInfo.Parent.FullName;
+
+                DirectoryInfo baseDirInfo = new DirectoryInfo(baseDir);
+                string baseDirName = baseDirInfo.Name;
+                string savePathDir = Path.Combine(saveFileDir, baseDirName);
+
+                Directory.CreateDirectory(savePathDir);
+
+                foreach (FileSystemInfo item in baseDirInfo.EnumerateFileSystemInfos())
                 {
-                    if (!lstModuleExcludePathesContains(item))
+                    if ((item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
                     {
-                        if ((item.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
+                        if (!lstModuleExcludePathesContains(item))
                         {
-                            DirectoryCopy(item.FullName, Path.Combine(text, item.Name), copySubDirs: true);
+                            if ((item.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
+                            {
+                                DirectoryCopy(item.FullName, Path.Combine(savePathDir, item.Name), copySubDirs: true);
+                            }
+                            else
+                            {
+                                File.Copy(item.FullName, Path.Combine(savePathDir, item.Name), true);
+                            }
+                            RichTextBoxAddTextDelegateMethod(txtOutput, "Copying " + item.Name);
                         }
-                        else
-                        {
-                            File.Copy(item.FullName, Path.Combine(text, item.Name), true);
-                        }
-                        RichTextBoxAddTextDelegateMethod(txtOutput, "Copying " + item.Name);
                     }
                 }
-            }
 
-            RichTextBoxAddTextDelegateMethod(txtOutput, "Creating Archive......");
-            Process process = new Process();
-            process.StartInfo = new ProcessStartInfo();
-            process.StartInfo.FileName = "7z.exe";
-            process.StartInfo.Arguments = string.Format("{0} \"{1}\" \"{2}\\*\"", "a -tzip -r", txtModSavePath.Text, text);
-            process.StartInfo.RedirectStandardError = true;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardInput = true;
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            process.StartInfo.CreateNoWindow= true;
-            process.OutputDataReceived += Process_OutputDataReceived;
-            process.Start();
-            while (!process.HasExited)
-            {
-                string text2 = process.StandardOutput.ReadLine();
-                RichTextBoxAddTextDelegateMethod(txtOutput, text2);
+                RichTextBoxAddTextDelegateMethod(txtOutput, "Creating Archive......");
+                Process process = new Process();
+                process.StartInfo = new ProcessStartInfo();
+                process.StartInfo.FileName = "7z.exe";
+                process.StartInfo.Arguments = string.Format("{0} \"{1}\" \"{2}\\*\"", "a -tzip -r", txtModSavePath.Text, savePathDir);
+                process.StartInfo.RedirectStandardError = true;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardInput = true;
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                process.StartInfo.CreateNoWindow = true;
+                process.OutputDataReceived += Process_OutputDataReceived;
+                process.Start();
+                while (!process.HasExited)
+                {
+                    string text2 = process.StandardOutput.ReadLine();
+                    RichTextBoxAddTextDelegateMethod(txtOutput, text2);
+                }
+                Directory.Delete(savePathDir, recursive: true);
             }
-            Directory.Delete(text, recursive: true);
         }
 
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
@@ -185,7 +191,7 @@ namespace MountBladeModulePacker
 
             btnStartPack.Enabled = true;
             btnAddModExcludeItem.Enabled = true;
-            btnRemoveModExcludeItem.Enabled = true;
+            btnRemoveModExcludeItem.Enabled = false;
             btnBrowseModBaseDir.Enabled = true;
             btnSaveProfile.Enabled = true;
             btnLoadPackProfile.Enabled = true;

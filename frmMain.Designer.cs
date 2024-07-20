@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.lbModBaseDir = new System.Windows.Forms.Label();
             this.txtModBaseDir = new System.Windows.Forms.TextBox();
             this.lbModExcludeList = new System.Windows.Forms.Label();
@@ -206,7 +207,7 @@
             this.btnSaveProfile.Name = "btnSaveProfile";
             this.btnSaveProfile.Size = new System.Drawing.Size(167, 60);
             this.btnSaveProfile.TabIndex = 13;
-            this.btnSaveProfile.Text = "Save As";
+            this.btnSaveProfile.Text = "Save Profile As";
             this.btnSaveProfile.UseVisualStyleBackColor = true;
             this.btnSaveProfile.Click += new System.EventHandler(this.btnSaveProfile_Click);
             // 
@@ -229,10 +230,10 @@
             this.Controls.Add(this.lbModExcludeList);
             this.Controls.Add(this.txtModBaseDir);
             this.Controls.Add(this.lbModBaseDir);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmMain";
-            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Mount&Blade Mod Packer";
             this.groupOutput.ResumeLayout(false);
