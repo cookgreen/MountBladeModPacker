@@ -47,7 +47,6 @@ namespace MountBladeModPacker
                 {
                     files.Add(fileFolderItem.Name);
                 }
-
             }
 
             folders.Sort();
