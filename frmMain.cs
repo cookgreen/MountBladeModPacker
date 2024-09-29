@@ -7,41 +7,11 @@ namespace MountBladeModulePacker
     public partial class frmMain : Form
     {
         private List<FolderFile> excludedFileFolders;
-        private RichTextBoxAddTextDelegate richTextBoxAddTextDelegateObj;
-        private ListViewGetItemsDelegate listViewGetItemsDelegateObj;
-        private delegate void RichTextBoxAddTextDelegate(RichTextBox richTextBox, string text);
-        private delegate ListView.ListViewItemCollection ListViewGetItemsDelegate(ListView listView);
 
         public frmMain()
         {
             InitializeComponent();
             excludedFileFolders = new List<FolderFile>();
-            richTextBoxAddTextDelegateObj = new RichTextBoxAddTextDelegate(RichTextBoxAddTextDelegateMethod);
-            listViewGetItemsDelegateObj = new ListViewGetItemsDelegate(ListViewGetItemsDelegateMethod);
-        }
-
-        private void RichTextBoxAddTextDelegateMethod(RichTextBox richTextBox, string text)
-        {
-            if(richTextBox.InvokeRequired)
-            {
-                richTextBox.Invoke(richTextBoxAddTextDelegateObj, richTextBox, text);
-            }
-            else
-            {
-                RichBoxAddText(richTextBox, text);
-            }
-        }
-
-        private ListView.ListViewItemCollection ListViewGetItemsDelegateMethod(ListView listView)
-        {
-            if(listView.InvokeRequired)
-            {
-                return (ListView.ListViewItemCollection)listView.Invoke(listViewGetItemsDelegateObj, listView);
-            }
-            else
-            {
-                return listView.Items;
-            }
         }
 
         private void btnBrowseModBaseDir_Click(object sender, EventArgs e)
@@ -173,12 +143,18 @@ namespace MountBladeModulePacker
                             {
                                 File.Copy(item.FullName, Path.Combine(savePathDir, item.Name), true);
                             }
-                            RichTextBoxAddTextDelegateMethod(txtOutput, "Copying " + item.Name);
+                            Invoke(new Action(() =>
+                            {
+                                OutputMessage(txtOutput, "Copying " + item.Name);
+                            }));
                         }
                     }
                 }
 
-                RichTextBoxAddTextDelegateMethod(txtOutput, "Creating Archive......");
+                Invoke(new Action(() =>
+                {
+                    OutputMessage(txtOutput, "Creating Archive......");
+                }));
                 Process process = new Process();
                 process.StartInfo = new ProcessStartInfo();
                 process.StartInfo.FileName = "7z.exe";
@@ -189,26 +165,19 @@ namespace MountBladeModulePacker
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 process.StartInfo.CreateNoWindow = true;
-                process.OutputDataReceived += Process_OutputDataReceived;
                 process.Start();
-                while (!process.HasExited)
-                {
-                    string text2 = process.StandardOutput.ReadLine();
-                    RichTextBoxAddTextDelegateMethod(txtOutput, text2);
-                }
+                while (!process.HasExited) { }
                 Directory.Delete(savePathDir, recursive: true);
             }
         }
 
-        private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            RichTextBoxAddTextDelegateMethod(txtOutput, e.Data);
-        }
-
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            RichTextBoxAddTextDelegateMethod(txtOutput, "Archive has been saved to " + txtModSavePath.Text);
-            RichTextBoxAddTextDelegateMethod(txtOutput, "Finished");
+            Invoke(new Action(() =>
+            {
+                OutputMessage(txtOutput, "Archive has been saved to " + txtModSavePath.Text);
+                OutputMessage(txtOutput, "Finished!");
+            }));
 
             btnStartPack.Enabled = true;
             btnAddModExcludeItem.Enabled = true;
@@ -264,9 +233,12 @@ namespace MountBladeModulePacker
             }
         }
 
-        private void RichBoxAddText(RichTextBox richTextBox, string message)
+        private void OutputMessage(RichTextBox richTextBox, string message)
         {
-            richTextBox.Text = richTextBox.Text + message + Environment.NewLine;
+            string line = string.Format("[{0}] {1}", 
+                DateTime.Now.ToString("HH:mm:ss"), 
+                message + Environment.NewLine);
+            richTextBox.Text += line;
         }
 
         private void btnStartPack_Click(object sender, EventArgs e)
